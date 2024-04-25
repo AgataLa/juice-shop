@@ -43,7 +43,7 @@ const FeedbackModelInit = (sequelize: Sequelize) => {
         set (comment: string) {
           let sanitizedComment: string
           if (!utils.disableOnContainerEnv()) {
-            sanitizedComment = security.sanitizeHtml(comment)
+            sanitizedComment = security.sanitizeUserHtml(comment)
             challengeUtils.solveIf(challenges.persistedXssFeedbackChallenge, () => {
               return utils.contains(
                 sanitizedComment,

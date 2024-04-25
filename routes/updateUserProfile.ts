@@ -24,7 +24,12 @@ module.exports = function updateUserProfile () {
               (req.headers.referer?.includes('://htmledit.squarefree.com'))) &&
               req.body.username !== user.username
           })
-          void user.update({ username: req.body.username }).then((savedUser: UserModel) => {
+          let new_username = req.body.username
+          if(new_username === undefined || !new_username.match(/^[a-zA-Z0-9]+[a-zA-Z0-9_\-.]+$/)) {
+            res.status(400).send(res.__('Username can only contain letters, numbers and _ - . signs.'))
+            return
+          }
+          void user.update({ username: new_username }).then((savedUser: UserModel) => {
             // @ts-expect-error FIXME some properties missing in savedUser
             savedUser = utils.queryResultToJson(savedUser)
             const updatedToken = security.authorize(savedUser)

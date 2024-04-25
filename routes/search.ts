@@ -10,6 +10,7 @@ import { UserModel } from '../models/user'
 import * as utils from '../lib/utils'
 const challengeUtils = require('../lib/challengeUtils')
 const challenges = require('../data/datacache').challenges
+const validator = require('validator')
 
 class ErrorWithParent extends Error {
   parent: Error | undefined
@@ -18,6 +19,10 @@ class ErrorWithParent extends Error {
 // vuln-code-snippet start unionSqlInjectionChallenge dbSchemaChallenge
 module.exports = function searchProducts () {
   return (req: Request, res: Response, next: NextFunction) => {
+    if (req.query.q !== 'undefined' && req.query.q !== '' && !validator.isAlphanumeric(req.query.q)) {
+      res.status(400).json({ error: 'Invalid search expression' })
+      return
+    }
     let criteria: any = req.query.q === 'undefined' ? '' : req.query.q ?? ''
     criteria = (criteria.length <= 200) ? criteria : criteria.substring(0, 200)
     models.sequelize.query(`SELECT * FROM Products WHERE ((name LIKE '%${criteria}%' OR description LIKE '%${criteria}%') AND deletedAt IS NULL) ORDER BY name`) // vuln-code-snippet vuln-line unionSqlInjectionChallenge dbSchemaChallenge

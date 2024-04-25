@@ -264,7 +264,7 @@ export function oauthMatcher (url: UrlSegment[]): UrlMatchResult {
     return null as unknown as UrlMatchResult
   }
   const path = window.location.href
-  if (path.includes('#access_token=')) {
+  if (path.includes('access_token=')) {
     return ({ consumed: url })
   }
 

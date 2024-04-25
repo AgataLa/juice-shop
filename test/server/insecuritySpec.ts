@@ -118,34 +118,34 @@ describe('insecurity', () => {
     })
   })
 
-  describe('sanitizeHtml', () => {
+  describe('sanitizeUserHtml', () => {
     it('handles empty inputs by returning their string representation', () => {
-      expect(security.sanitizeHtml()).to.equal('undefined')
-      expect(security.sanitizeHtml(undefined)).to.equal('undefined')
-      expect(security.sanitizeHtml(null)).to.equal('null')
-      expect(security.sanitizeHtml('')).to.equal('')
+      expect(security.sanitizeUserHtml()).to.equal('undefined')
+      expect(security.sanitizeUserHtml(undefined)).to.equal('undefined')
+      expect(security.sanitizeUserHtml(null)).to.equal('null')
+      expect(security.sanitizeUserHtml('')).to.equal('')
     })
 
     it('returns input unchanged for plain text input', () => {
-      expect(security.sanitizeHtml('This application is horrible!')).to.equal('This application is horrible!')
+      expect(security.sanitizeUserHtml('This application is horrible!')).to.equal('This application is horrible!')
     })
 
     it('returns input unchanged for HTML input with only harmless text formatting', () => {
-      expect(security.sanitizeHtml('<strong>This</strong> application <em>is horrible</em>!')).to.equal('<strong>This</strong> application <em>is horrible</em>!')
+      expect(security.sanitizeUserHtml('<strong>This</strong> application <em>is horrible</em>!')).to.equal('<strong>This</strong> application <em>is horrible</em>!')
     })
 
     it('returns input unchanged for HTML input with only harmless links', () => {
-      expect(security.sanitizeHtml('<a href="bla.blubb">Please see here for details!</a>')).to.equal('<a href="bla.blubb">Please see here for details!</a>')
+      expect(security.sanitizeUserHtml('<a href="bla.blubb">Please see here for details!</a>')).to.equal('<a href="bla.blubb">Please see here for details!</a>')
     })
 
     it('removes all Javascript from HTML input', () => {
-      expect(security.sanitizeHtml('Sani<script>alert("ScriptXSS")</script>tizedScript')).to.equal('SanitizedScript')
-      expect(security.sanitizeHtml('Sani<img src="alert("ImageXSS")"/>tizedImage')).to.equal('SanitizedImage')
-      expect(security.sanitizeHtml('Sani<iframe src="alert("IFrameXSS")"></iframe>tizedIFrame')).to.equal('SanitizedIFrame')
+      expect(security.sanitizeUserHtml('Sani<script>alert("ScriptXSS")</script>tizedScript')).to.equal('SanitizedScript')
+      expect(security.sanitizeUserHtml('Sani<img src="alert("ImageXSS")"/>tizedImage')).to.equal('SanitizedImage')
+      expect(security.sanitizeUserHtml('Sani<iframe src="alert("IFrameXSS")"></iframe>tizedIFrame')).to.equal('SanitizedIFrame')
     })
 
     it('can be bypassed by exploiting lack of recursive sanitization', () => {
-      expect(security.sanitizeHtml('<<script>Foo</script>iframe src="javascript:alert(`xss`)">')).to.equal('<iframe src="javascript:alert(`xss`)">')
+      expect(security.sanitizeUserHtml('<<script>Foo</script>iframe src="javascript:alert(`xss`)">')).to.equal('<iframe src="javascript:alert(`xss`)">')
     })
   })
 

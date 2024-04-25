@@ -18,7 +18,7 @@ interface RequestWithRawBody extends Request {
 
 module.exports.addBasketItem = function addBasketItem () {
   return (req: RequestWithRawBody, res: Response, next: NextFunction) => {
-    const result = utils.parseJsonCustom(req.rawBody)
+    const result = utils.parseJsonCustom(JSON.stringify(req.rawBody))
     const productIds = []
     const basketIds = []
     const quantities = []

@@ -17,7 +17,15 @@ export class OAuthComponent implements OnInit {
   constructor (private readonly cookieService: CookieService, private readonly userService: UserService, private readonly router: Router, private readonly route: ActivatedRoute, private readonly ngZone: NgZone) { }
 
   ngOnInit () {
-    this.userService.oauthLogin(this.parseRedirectUrlParams().access_token).subscribe((profile: any) => {
+    var params = this.parseRedirectUrlParams()
+    var state = params.state
+    var localState = this.cookieService.get('state')
+    this.cookieService.remove('state')
+    if (localState === '' || state !== localState) {
+      this.ngZone.run(async () => await this.router.navigate(['/login']))
+      return
+    }
+    this.userService.oauthLogin(params.access_token).subscribe((profile: any) => {
       const password = btoa(profile.email.split('').reverse().join(''))
       this.userService.save({ email: profile.email, password, passwordRepeat: password }).subscribe(() => {
         this.login(profile)
@@ -59,6 +67,7 @@ export class OAuthComponent implements OnInit {
       const key: string = param[0]
       params[key] = param[1]
     }
+    console.log(params)
     return params
   }
 }

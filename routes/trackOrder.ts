@@ -13,9 +13,12 @@ const db = require('../data/mongodb')
 module.exports = function trackOrder () {
   return (req: Request, res: Response) => {
     const id = utils.disableOnContainerEnv() ? String(req.params.id).replace(/[^\w-]+/g, '') : req.params.id
-
+    if(req.params.id === undefined || !req.params.id.match(/^[a-f0-9\-]+$/)) {
+      res.status(400).json({ error: 'Wrong Param' })
+      return
+    }
     challengeUtils.solveIf(challenges.reflectedXssChallenge, () => { return utils.contains(id, '<iframe src="javascript:alert(`xss`)">') })
-    db.orders.find({ $where: `this.orderId === '${id}'` }).then((order: any) => {
+    db.orders.find({ orderId: id }).then((order: any) => {
       const result = utils.queryResultToJson(order)
       challengeUtils.solveIf(challenges.noSqlOrdersChallenge, () => { return result.data.length > 1 })
       if (result.data[0] === undefined) {

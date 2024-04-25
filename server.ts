@@ -119,6 +119,7 @@ const chatbot = require('./routes/chatbot')
 const locales = require('./data/static/locales.json')
 const i18n = require('i18n')
 const antiCheat = require('./lib/antiCheat')
+const filter = require('content-filter')
 
 const appName = config.get('application.customMetricsPrefix')
 const startupGauge = new client.Gauge({
@@ -159,6 +160,10 @@ restoreOverwrittenFilesWithOriginals().then(() => {
 
   /* Compression for all requests */
   app.use(compression())
+  
+  app.use(bodyParser.json())
+  app.use(bodyParser.urlencoded({extended:true}))
+  app.use(filter())
 
   /* Bludgeon solution for possible CORS problems: Allow everything! */
   app.options('*', cors())
@@ -251,8 +256,8 @@ restoreOverwrittenFilesWithOriginals().then(() => {
   app.use('/ftp/quarantine/:file', quarantineServer()) // vuln-code-snippet neutral-line directoryListingChallenge
 
   /* /encryptionkeys directory browsing */
-  app.use('/encryptionkeys', serveIndexMiddleware, serveIndex('encryptionkeys', { icons: true, view: 'details' }))
-  app.use('/encryptionkeys/:file', keyServer())
+  // app.use('/encryptionkeys', serveIndexMiddleware, serveIndex('encryptionkeys', { icons: true, view: 'details' }))
+  // app.use('/encryptionkeys/:file', keyServer())
 
   /* /logs directory browsing */ // vuln-code-snippet neutral-line accessLogDisclosureChallenge
   app.use('/support/logs', serveIndexMiddleware, serveIndex('logs', { icons: true, view: 'details' })) // vuln-code-snippet vuln-line accessLogDisclosureChallenge

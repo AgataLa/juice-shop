@@ -15,6 +15,7 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 import { FormSubmitService } from '../Services/form-submit.service'
 import { ConfigurationService } from '../Services/configuration.service'
 import { BasketService } from '../Services/basket.service'
+const cryptojs = require('crypto-js');
 
 library.add(faKey, faEye, faEyeSlash, faGoogle)
 
@@ -105,6 +106,8 @@ export class LoginComponent implements OnInit {
   }
 
   googleLogin () {
-    this.windowRefService.nativeWindow.location.replace(`${oauthProviderUrl}?client_id=${this.clientId}&response_type=token&scope=email&redirect_uri=${this.redirectUri}`)
+    var state = cryptojs.lib.WordArray.random(32).toString()
+    this.cookieService.put('state', state)
+    this.windowRefService.nativeWindow.location.replace(`${oauthProviderUrl}?client_id=${this.clientId}&response_type=token&scope=email&redirect_uri=${this.redirectUri}&state=${state}`)
   }
 }
