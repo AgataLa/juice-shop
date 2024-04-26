@@ -1,0 +1,2 @@
+Potrzebna zmienna środowiskowa:
+PASSPHRASE_PKEY: t1YulyaWN77eMZOrrm4eW3HXnjUjkAzr

@@ -73,7 +73,11 @@ const UserModelInit = (sequelize: Sequelize) => { // vuln-code-snippet start wea
       }, // vuln-code-snippet hide-end
       password: {
         type: DataTypes.STRING,
-        set (clearTextPassword) {
+        set (clearTextPassword: string) {
+          if(!clearTextPassword.match(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z \d!@#$%^&*]{13,40}/)) {
+            console.log(clearTextPassword)
+            throw new Error('Password must be 13-40 characters long and cointain at least one lowercase letter, one uppercase letter, one number and one special character.')
+          }
           this.setDataValue('password', security.hash(clearTextPassword)) // vuln-code-snippet vuln-line weakPasswordChallenge
         }
       }, // vuln-code-snippet end weakPasswordChallenge

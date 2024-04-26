@@ -231,7 +231,7 @@ async function createRandomFakeUsers () {
   return await Promise.all(new Array(config.get('application.numberOfRandomFakeUsers')).fill(0).map(
     async () => await UserModel.create({
       email: getGeneratedRandomFakeUserEmail(),
-      password: makeRandomString(5)
+      password: makeRandomString(13)
     })
   ))
 }

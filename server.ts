@@ -42,7 +42,7 @@ const securityTxt = require('express-security.txt')
 const robots = require('express-robots-txt')
 const yaml = require('js-yaml')
 const swaggerUi = require('swagger-ui-express')
-const RateLimit = require('express-rate-limit')
+import { rateLimit } from 'express-rate-limit'
 const client = require('prom-client')
 const ipfilter = require('express-ipfilter').IpFilter
 const swaggerDocument = yaml.load(fs.readFileSync('./swagger.yml', 'utf8'))
@@ -168,6 +168,17 @@ restoreOverwrittenFilesWithOriginals().then(() => {
   /* Bludgeon solution for possible CORS problems: Allow everything! */
   app.options('*', cors())
   app.use(cors())
+
+  const limiter = rateLimit({
+    windowMs: 60 * 1000,
+    limit: 1000,
+    standardHeaders: 'draft-7',
+    message: "You have exceeded your 5 requests per minute limit",
+    legacyHeaders: false,
+  })
+  
+  // Apply the rate limiting middleware to all requests.
+  app.use(limiter)
 
   /* Security middleware */
   app.use(helmet.noSniff())
@@ -314,8 +325,8 @@ restoreOverwrittenFilesWithOriginals().then(() => {
 
   // vuln-code-snippet start resetPasswordMortyChallenge
   /* Rate limiting */
-  app.enable('trust proxy')
-  app.use('/rest/user/reset-password', new RateLimit({
+  //app.enable('trust proxy')
+  app.use('/rest/user/reset-password', rateLimit({
     windowMs: 5 * 60 * 1000,
     max: 100,
     keyGenerator ({ headers, ip }: { headers: any, ip: any }) { return headers['X-Forwarded-For'] || ip } // vuln-code-snippet vuln-line resetPasswordMortyChallenge
@@ -425,20 +436,20 @@ restoreOverwrittenFilesWithOriginals().then(() => {
 
   /* Verify the 2FA Token */
   app.post('/rest/2fa/verify',
-    new RateLimit({ windowMs: 5 * 60 * 1000, max: 100 }),
+    rateLimit({ windowMs: 5 * 60 * 1000, max: 100 }),
     twoFactorAuth.verify()
   )
   /* Check 2FA Status for the current User */
   app.get('/rest/2fa/status', security.isAuthorized(), twoFactorAuth.status())
   /* Enable 2FA for the current User */
   app.post('/rest/2fa/setup',
-    new RateLimit({ windowMs: 5 * 60 * 1000, max: 100 }),
+    rateLimit({ windowMs: 5 * 60 * 1000, max: 100 }),
     security.isAuthorized(),
     twoFactorAuth.setup()
   )
   /* Disable 2FA Status for the current User */
   app.post('/rest/2fa/disable',
-    new RateLimit({ windowMs: 5 * 60 * 1000, max: 100 }),
+    rateLimit({ windowMs: 5 * 60 * 1000, max: 100 }),
     security.isAuthorized(),
     twoFactorAuth.disable()
   )
@@ -552,7 +563,13 @@ restoreOverwrittenFilesWithOriginals().then(() => {
   }
 
   /* Custom Restful API */
-  app.post('/rest/user/login', login())
+  app.post('/rest/user/login', rateLimit({
+    windowMs: 60 * 1000 * 10,
+    limit: 5,
+    standardHeaders: 'draft-7',
+    message: "Too many failed login attempts, please try again later",
+    legacyHeaders: false,
+  }), login())
   app.get('/rest/user/change-password', changePassword())
   app.post('/rest/user/reset-password', resetPassword())
   app.get('/rest/user/security-question', securityQuestion())

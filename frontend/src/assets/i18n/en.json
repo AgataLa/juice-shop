@@ -23,7 +23,7 @@
   "INVALID_EMAIL": "Email address is not valid.",
   "SECURITY_ANSWER": "Answer",
   "MANDATORY_PASSWORD_REPEAT": "Please repeat your password.",
-  "INVALID_PASSWORD_LENGTH": "Password must be {{length}} characters long.",
+  "INVALID_PASSWORD_LENGTH": "Password must be {{length}} characters long and cointain at least one lowercase letter, one uppercase letter, one number and one special character.",
   "LABEL_PASSWORD_REPEAT": "Repeat Password",
   "PASSWORDS_NOT_MATCHING": "Passwords do not match",
   "BTN_REGISTER": "Register",

@@ -14,7 +14,7 @@ module.exports = function trackOrder () {
   return (req: Request, res: Response) => {
     const id = utils.disableOnContainerEnv() ? String(req.params.id).replace(/[^\w-]+/g, '') : req.params.id
     if(req.params.id === undefined || !req.params.id.match(/^[a-f0-9\-]+$/)) {
-      res.status(400).json({ error: 'Wrong Param' })
+      res.status(400).json({ error: 'Wrong order id' })
       return
     }
     challengeUtils.solveIf(challenges.reflectedXssChallenge, () => { return utils.contains(id, '<iframe src="javascript:alert(`xss`)">') })
@@ -26,7 +26,7 @@ module.exports = function trackOrder () {
       }
       res.json(result)
     }, () => {
-      res.status(400).json({ error: 'Wrong Param' })
+      res.status(400).json({ error: 'Wrong order id' })
     })
   }
 }
