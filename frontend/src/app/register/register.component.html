@@ -28,7 +28,7 @@
           <i class="fas fa-exclamation-circle"></i>
           <em style="margin-left:5px;" translate>{{ 'INVALID_PASSWORD_LENGTH' | translate: {length: '13-40'} }}</em>
         </mat-hint>
-        <mat-hint align="end">{{password.value?.length || 0}}/20</mat-hint>
+        <mat-hint align="end">{{password.value?.length || 0}}/40</mat-hint>
         <mat-error *ngIf="passwordControl.invalid && passwordControl.errors.required" translate>MANDATORY_PASSWORD
         </mat-error>
         <mat-error
